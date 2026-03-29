@@ -15,36 +15,49 @@ if uploaded_file is not None:
     st.success("Data loaded successfully!")
     
     with st.expander("⚙️ Configure Diagnostic Parameters", expanded=True):
-        col1, col2, col3 = st.columns(3)
+        col1, col2 = st.columns(2)
+        
         with col1:
-            target_col = st.selectbox("Target Column (e.g., Approved)", df.columns)
-            fav_outcome = st.text_input("Favorable Outcome Value (e.g., 1)")
+            target_col = st.selectbox("🎯 Target Column (The Prediction)", df.columns, index=len(df.columns)-1 if len(df.columns) > 0 else 0)
+            fav_outcome = st.text_input("Favorable Outcome Value (e.g., 1)", value="1")
+            sec_prot = st.selectbox("Secondary Attribute (For Intersections)", df.columns, index=1 if len(df.columns) > 1 else 0)
+            
         with col2:
-            prot_col = st.selectbox("Protected Attribute (e.g., Gender)", df.columns)
-            priv_class = st.text_input("Privileged Class (e.g., Male)")
-            unpriv_class = st.text_input("Unprivileged Class (e.g., Female)")
-        with col3:
-            threshold_45 = st.slider("4/5ths Rule Threshold", 0.0, 1.0, 0.80)
-            desert_thresh = st.slider("Data Desert Threshold", 0.0, 0.5, 0.10)
+            prot_col = st.selectbox("🛡️ Protected Attribute (The Demographic)", df.columns, index=0)
+            priv_class = st.text_input("Privileged Class (e.g., White)", value="White")
+            unpriv_class = st.text_input("Unprivileged Class (e.g., Hispanic)", value="Hispanic")
+            
+        with st.expander("🛠️ Advanced Threshold Settings"):
+            st.markdown("Tweak the mathematical strictness of the diagnostics.")
+            threshold_45 = st.slider("4/5ths Rule Legal Line", 0.0, 1.0, 0.80)
+            desert_thresh = st.slider("Data Desert Danger Zone", 0.0, 0.5, 0.10)
             proxy_thresh = st.slider("Proxy Detection Sensitivity", 0, 100, 50)
-            sec_prot = st.selectbox("Secondary Attribute (for Intersectional Test)", df.columns)
 
     if st.button("Run Diagnostics", type="primary"):
+        
+        # --- The Anti-Crash Safety Lock ---
+        if target_col == prot_col:
+            st.error("🚨 Hold up! Your Target Column and Protected Attribute cannot be the exact same column. Fix your dropdowns!")
+            st.stop()
+            
         st.divider()
         
-        # Auto-convert favorable outcome to int if it's a number
+        # Auto-convert inputs to integers if the user typed numbers
         try:
-            fav_outcome = int(fav_outcome) if fav_outcome.isdigit() else fav_outcome
-            priv_class = int(priv_class) if priv_class.isdigit() else priv_class
-            unpriv_class = int(unpriv_class) if unpriv_class.isdigit() else unpriv_class
+            fav_outcome = int(fav_outcome) if str(fav_outcome).isdigit() else fav_outcome
+            priv_class = int(priv_class) if str(priv_class).isdigit() else priv_class
+            unpriv_class = int(unpriv_class) if str(unpriv_class).isdigit() else unpriv_class
         except:
             pass
 
+        # ---------------------------------------------------------
+        # 1. Disparate Impact (4/5ths Rule)
+        # ---------------------------------------------------------
         st.subheader("1. Disparate Impact (4/5ths Rule) Legal Check")
         di_ratio, is_legal = check_ratio(df, prot_col, target_col, priv_class, unpriv_class, fav_outcome, threshold_45)
         
         if pd.isna(di_ratio):
-            st.warning("Could not calculate 4/5ths rule. Check your class names.")
+            st.warning(f"Could not calculate 4/5ths rule. Are you sure '{priv_class}' and '{unpriv_class}' exist in the '{prot_col}' column?")
         else:
             if is_legal:
                 st.success(f"✅ Pass: Ratio is {di_ratio:.2f} (Above {threshold_45})")
@@ -53,6 +66,9 @@ if uploaded_file is not None:
 
         st.divider()
 
+        # ---------------------------------------------------------
+        # 2. Data Desert Test
+        # ---------------------------------------------------------
         st.subheader("2. Data Desert Test (Class Imbalance)")
         desert_df = check_data_desert(df, prot_col, desert_thresh)
         
@@ -66,6 +82,9 @@ if uploaded_file is not None:
 
         st.divider()
 
+        # ---------------------------------------------------------
+        # 3. Proxy Variable Radar
+        # ---------------------------------------------------------
         st.subheader("3. Proxy Variable Radar")
         with st.spinner("Triangulating proxies..."):
             proxy_df = detect_proxy(df, prot_col, proxy_thresh, target_col)
@@ -81,11 +100,16 @@ if uploaded_file is not None:
 
         st.divider()
 
+        # ---------------------------------------------------------
+        # 4. Intersectional Gap Test
+        # ---------------------------------------------------------
         st.subheader("4. Intersectional Gap Test")
-        # Passing [prot_col, sec_prot] as the 'prot' argument for the intersectional group by
         gap, is_gap, grp = check_intersection(df, [prot_col, sec_prot], target_col, fav_outcome, threshold=0.2)
+        
         if is_gap:
             st.error(f"❌ Massive Intersectional Gap Detected: {(gap*100):.1f}% difference between highest and lowest groups.")
         else:
             st.success(f"✅ Intersectional gaps are within safe margins ({(gap*100):.1f}%).")
-        st.dataframe(grp, use_container_width=True)
+            
+        # Format the dataframe so it looks clean in the UI
+        st.dataframe(grp.style.format({'rate': '{:.1%}'}), use_container_width=True)
