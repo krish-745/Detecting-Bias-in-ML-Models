@@ -1,0 +1,284 @@
+/* ── STAGE TRACK ─────────────────────────────────────── */
+.stage-track {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin: 20px 0 36px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.stage-pill {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--text3);
+  letter-spacing: 0.04em;
+  position: relative;
+  transition: all 0.2s;
+  border-right: 1px solid var(--border);
+}
+.stage-pill:last-child { border-right: none; }
+
+.stage-pill.active {
+  background: rgba(99,102,241,0.08);
+  color: var(--accent2);
+}
+.stage-pill.done {
+  color: var(--pass);
+}
+.stage-pill-num {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  flex-shrink: 0;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  color: var(--text3);
+  transition: all 0.2s;
+}
+.stage-pill.active .stage-pill-num {
+  background: rgba(99,102,241,0.2);
+  border-color: rgba(99,102,241,0.4);
+  color: var(--accent2);
+}
+.stage-pill.done .stage-pill-num {
+  background: rgba(16,185,129,0.15);
+  border-color: rgba(16,185,129,0.3);
+  color: var(--pass);
+}
+
+/* ── STAGE PANEL ─────────────────────────────────────── */
+.stage-panel {
+  animation: fadeUp 0.4s ease both;
+}
+.stage-panel.visible { display: block; }
+
+/* ── FLAG SUMMARY ────────────────────────────────────── */
+.flag-summary {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.flag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  padding: 6px 12px;
+  border-radius: 100px;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+.flag-pass {
+  background: var(--pass-bg);
+  color: var(--pass);
+  border: 1px solid rgba(16,185,129,0.25);
+}
+.flag-fail {
+  background: var(--fail-bg);
+  color: var(--fail);
+  border: 1px solid rgba(239,68,68,0.25);
+}
+
+/* ── RECOMMENDATION CARD ─────────────────────────────── */
+.reco-card {
+  padding: 28px;
+  border-radius: var(--radius);
+  border-left: 4px solid;
+  margin-bottom: 4px;
+  animation: fadeUp 0.3s ease;
+}
+.reco-card--pass {
+  background: var(--pass-bg);
+  border-color: var(--pass);
+}
+.reco-card--warn {
+  background: var(--warn-bg);
+  border-color: var(--warn);
+}
+.reco-card--fail {
+  background: var(--fail-bg);
+  border-color: var(--fail);
+}
+.reco-card-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  margin-bottom: 12px;
+}
+.reco-card--pass .reco-card-title { color: var(--pass); }
+.reco-card--warn .reco-card-title { color: var(--warn); }
+.reco-card--fail .reco-card-title { color: var(--fail); }
+.reco-card-reason {
+  font-size: 14px;
+  color: var(--text2);
+  line-height: 1.7;
+}
+
+/* ── ALGORITHM SELECTOR GRID ─────────────────────────── */
+.algo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+.algo-card {
+  background: var(--bg2);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+}
+.algo-card:hover {
+  border-color: rgba(99,102,241,0.4);
+  background: rgba(99,102,241,0.04);
+  transform: translateY(-1px);
+}
+.algo-card--selected {
+  border-color: var(--accent);
+  background: rgba(99,102,241,0.08);
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.12);
+}
+.algo-card--selected-green {
+  border-color: var(--pass) !important;
+  background: rgba(16,185,129,0.06) !important;
+  box-shadow: 0 0 0 3px rgba(16,185,129,0.1) !important;
+}
+.algo-card-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.algo-card-desc {
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.6;
+}
+.algo-recommended-badge {
+  position: absolute;
+  top: -10px;
+  right: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  background: var(--accent);
+  color: #fff;
+  padding: 3px 8px;
+  border-radius: 100px;
+  letter-spacing: 0.05em;
+}
+.algo-recommended-badge--green {
+  background: var(--pass);
+}
+
+/* ── AFS COMPARISON DASHBOARD ────────────────────────── */
+.afs-comparison {
+  padding: 32px;
+}
+.afs-comparison-gauges {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  margin-bottom: 36px;
+  padding-bottom: 36px;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.afs-gauge-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.afs-gauge-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 12px;
+  text-align: center;
+}
+.afs-delta-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.afs-delta-badge {
+  font-family: 'Syne', sans-serif;
+  font-size: 26px;
+  font-weight: 800;
+  padding: 12px 24px;
+  border-radius: var(--radius);
+  letter-spacing: -0.02em;
+}
+.afs-delta-badge.good {
+  background: rgba(16,185,129,0.1);
+  color: var(--pass);
+  border: 1px solid rgba(16,185,129,0.2);
+}
+.afs-delta-badge.bad {
+  background: rgba(239,68,68,0.1);
+  color: var(--fail);
+  border: 1px solid rgba(239,68,68,0.2);
+}
+
+.afs-metrics-grid {
+  margin-bottom: 32px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--border);
+}
+
+.afs-narrative {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius2);
+  padding: 24px;
+}
+
+/* ── RESULTS-HEADER OVERRIDE for pages ──────────────── */
+.results-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 0 0 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.results-header h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin: 0;
+}
+
+/* Error card reuse */
+.error-card {
+  background: var(--fail-bg);
+  border: 1px solid rgba(239,68,68,0.2);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  color: var(--fail);
+  font-size: 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
